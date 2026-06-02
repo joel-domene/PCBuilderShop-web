@@ -152,7 +152,7 @@ El control de propiedad está implementado a nivel de seguridad: un usuario solo
 La API REST de `app-service` está documentada con OpenAPI generado por SpringDoc y sigue buenas prácticas: rutas bajo `/api/v1/`, recursos en plural, uso correcto de verbos HTTP y códigos de estado, header `Location` en las creaciones, paginación por parámetros y DTOs para no exponer las entidades.
 
 - [Especificación OpenAPI (YAML)](api-docs/apidocs.yaml)
-- [Documentación HTML de la API](https://raw.githack.com/joel-domene/ProyectoSSDD/main/api-docs/api-docs.html)
+- [Documentación HTML de la API](https://raw.githack.com/joel-domene/PCBuilderShop-web/main/api-docs/api-docs.html)
 - Colección de **Postman** incluida en [`postman/`](postman/) para probar todos los endpoints.
 
 Durante la ejecución local también está disponible en:
