@@ -10,7 +10,7 @@
   <img src="https://img.shields.io/badge/Spring%20Security-JWT-brightgreen.svg" alt="Security">
   <img src="https://img.shields.io/badge/Docker-compose-2496ED.svg" alt="Docker">
   <img src="https://img.shields.io/badge/OpenAPI-SpringDoc-85EA2D.svg" alt="OpenAPI">
-  <img src="https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg" alt="License">
+  <img src="https://img.shields.io/badge/status-academic%20project-lightgrey.svg" alt="Status">
 </p>
 
 -----
