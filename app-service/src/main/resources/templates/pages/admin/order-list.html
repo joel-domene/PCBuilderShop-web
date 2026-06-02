@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PCBuilderShop - Gestión de Pedidos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="../../css/style.css" rel="stylesheet" />
+</head>
+
+<body>
+   {{#isLoggedIn}}
+        {{> partials/headers/loged_header}}
+    {{/isLoggedIn}}
+    
+    {{^isLoggedIn}}
+        {{> partials/headers/unloged_header}}
+    {{/isLoggedIn}} 
+    <main class="container my-5 pt-4">
+        <!-- Navigation of Administration -->
+        <nav class="nav nav-pills mb-4">
+            <a class="nav-link" href="admin-dashboard"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
+            <a class="nav-link" href="item-list"><i class="bi bi-box-seam me-1"></i>Productos</a>
+            <a class="nav-link" href="user-list"><i class="bi bi-people me-1"></i>Usuarios</a>
+            <a class="nav-link" href="review-list"><i class="bi bi-chat-left-text me-1"></i>Reseñas</a>
+            <a class="nav-link active" href="order-list"><i class="bi bi-cart-check me-1"></i>Pedidos</a>
+        </nav>
+
+        <!-- Title and Main Action -->
+        <header class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="mb-1"><i class="bi bi-truck me-2"></i>Gestión de Pedidos</h2>
+                <p class="text-muted mb-0 small">Control de pedidos de clientes, facturación y estados de envío.</p>
+            </div>
+        </header>
+
+        <!-- Global Metrics -->
+        <section class="mb-4">
+            <div class="row g-3">
+                <!-- Orders total -->
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm text-center p-3">
+                        <div class="text-primary mb-1"><i class="bi bi-receipt fs-3"></i></div>
+                        <h4 class="fw-bold mb-0">{{totalOrders}}</h4>
+                        <small class="text-muted">Pedidos Totales</small>
+                    </div>
+                </div>
+                <!-- Income -->
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm text-center p-3">
+                        <div class="text-success mb-1"><i class="bi bi-currency-euro fs-3"></i></div>
+                        <h4 class="fw-bold mb-0">{{totalIncome}}€</h4>
+                        <small class="text-muted">Ingresos Totales</small>
+                    </div>
+                </div>
+                <!-- Pending -->
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm text-center p-3">
+                        <div class="text-warning mb-1"><i class="bi bi-clock-history fs-3"></i></div>
+                        <h4 class="fw-bold mb-0">{{pendingOrders}}</h4>
+                        <small class="text-muted">Pendientes</small>
+                    </div>
+                </div>
+                <!-- Cancelled -->
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm text-center p-3">
+                        <div class="text-danger mb-1"><i class="bi bi-x-circle fs-3"></i></div>
+                        <h4 class="fw-bold mb-0">{{cancelledOrders}}</h4>
+                        <small class="text-muted">Cancelados</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filter Panel -->
+        <section class="card shadow-sm border-0 mb-4 bg-light">
+            <div class="card-body">
+                <form class="row g-3 align-items-end" onsubmit="return false;">
+                    <!-- Client Search -->
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Buscar Cliente / Pedido</label>
+                        <input type="text" class="form-control form-control-sm"
+                            placeholder="Nº de pedido o nombre de cliente..." id="filterOrderSearch" />
+                    </div>
+                    <!-- Filter by Status -->
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Estado del Envío</label>
+                        <select class="form-select form-select-sm" id="filterOrderStatus">
+                            <option value="">Todos los estados</option>
+                            <option value="PENDIENTE">Pendiente</option>
+                            <option value="EN PROCESO">Procesando</option>
+                            <option value="ENVIADO">Enviado</option>
+                            <option value="ENTREGADO">Entregado</option>
+                            <option value="CANCELADO">Cancelado</option>
+                        </select>
+                    </div>
+                    <!-- Filter by Date -->
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Rango de Fecha</label>
+                        <input type="date" class="form-control form-control-sm" id="filterOrderDate" />
+                    </div>
+                    <!-- Filter Button -->
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-sm btn-primary w-100" id="btnFilterOrders">
+                            <i class="bi bi-search me-1"></i>Filtrar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Orders Table -->
+        <section class="card shadow-sm border-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table align-middle table-hover mb-0">
+                    <thead class="bg-light border-bottom">
+                        <tr class="small text-uppercase fw-bold text-muted">
+                            <th class="ps-4">ID Pedido</th>
+                            <th>Cliente</th>
+                            <th>Fecha</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th class="text-end pe-4">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orderTableBody">
+                        {{#pedidos}}
+                        <tr data-client="{{user.username}}" data-status="{{status}}" data-date="{{formattedDate}}" data-orderid="O{{id}}">
+                            <td class="ps-4 fw-bold">#O{{id}}</td>
+                            <td>
+                                <div class="fw-bold">{{user.username}}</div>
+                                <div class="small text-muted">{{user.email}}</div>
+                            </td>
+                            <td>{{orderDate}}</td>
+                            <td>{{totalPrice}} €</td>
+                            <td><span class="badge bg-secondary">{{status}}</span></td>
+                            <td class="text-end pe-4">
+                                <div class="btn-group btn-group-sm">
+                                    <a href="order-edit?id={{id}}" class="btn btn-outline-primary"
+                                        title="Ver / Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {{/pedidos}}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Pagination -->
+        <nav class="mt-4 d-flex justify-content-center">
+            <ul class="pagination pagination-sm">
+                <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
+            </ul>
+        </nav>
+    </main>
+
+    <!-- Order Cancellation Modal -->
+    <div class="modal fade" id="modalCancelar" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-danger text-white border-0 py-2">
+                    <h6 class="modal-title small fw-bold text-uppercase">¿Cancelar Pedido?</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <i class="bi bi-exclamation-triangle text-danger fs-1 mb-2 d-block"></i>
+                    <p class="mb-1 small">Se marcará como cancelado el pedido:</p>
+                    <strong id="orderIdText" class="d-block mt-1 fs-5"></strong>
+                    <!-- Notification Option -->
+                    <div class="form-check form-switch mt-3 d-flex justify-content-center gap-2">
+                        <input class="form-check-input" type="checkbox" id="notifyCancelEmail" checked />
+                        <label class="form-check-label small" for="notifyCancelEmail">Notificar al cliente por
+                            email</label>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-2 justify-content-center">
+                    <button type="button" class="btn btn-sm btn-light px-3" data-bs-dismiss="modal">No, volver</button>
+                    <button type="button" class="btn btn-sm btn-danger px-3"
+                        onclick="alert('Pedido cancelado. Se ha notificado al cliente.'); location.reload()">
+                        Sí, cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{> partials/footer}}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Client-side filtering
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterSearch = document.getElementById('filterOrderSearch');
+            const filterStatus = document.getElementById('filterOrderStatus');
+            const filterDate = document.getElementById('filterOrderDate');
+            const btnFilter = document.getElementById('btnFilterOrders');
+            const rows = document.querySelectorAll('#orderTableBody tr');
+
+            function applyFilters() {
+                const searchQuery = filterSearch.value.toLowerCase().trim();
+                const statusQuery = filterStatus.value;
+                const dateQuery = filterDate.value; // yyyy-mm-dd
+
+                rows.forEach(row => {
+                    const client = (row.getAttribute('data-client') || '').toLowerCase();
+                    const orderId = (row.getAttribute('data-orderid') || '').toLowerCase();
+                    const status = row.getAttribute('data-status') || '';
+                    const dateStr = row.getAttribute('data-date') || ''; // dd/MM/yyyy
+
+                    // Text search: match client name or order ID
+                    let searchMatch = !searchQuery || client.includes(searchQuery) || orderId.includes(searchQuery);
+
+                    // Status filter
+                    let statusMatch = !statusQuery || status === statusQuery;
+
+                    // Date filter: convert dd/MM/yyyy to comparable format
+                    let dateMatch = true;
+                    if (dateQuery && dateStr) {
+                        const parts = dateStr.split('/');
+                        if (parts.length === 3) {
+                            const rowDate = parts[2] + '-' + parts[1] + '-' + parts[0]; // yyyy-mm-dd
+                            dateMatch = rowDate === dateQuery;
+                        }
+                    }
+
+                    row.style.display = (searchMatch && statusMatch && dateMatch) ? '' : 'none';
+                });
+            }
+
+            btnFilter.addEventListener('click', applyFilters);
+            filterSearch.addEventListener('input', applyFilters);
+            filterStatus.addEventListener('change', applyFilters);
+            filterDate.addEventListener('change', applyFilters);
+        });
+    </script>
+</body>
+
+</html>

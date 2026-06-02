@@ -1,0 +1,154 @@
+/* Sidebar categories styling */
+#sidebarCategorias .list-group-item {
+    background-color: transparent;
+    color: rgba(255, 255, 255, 0.75);
+    border: none;
+    padding: 0.5rem 1rem;
+}
+
+#sidebarCategorias .list-group-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+/* Product image styling */
+.card-img-top {
+    height: 200px;
+    object-fit: contain;
+    background-color: #fff;
+}
+
+/* Rating stars styling */
+.stars-outer {
+    position: relative;
+    display: inline-block;
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 1.2rem;
+    color: #e0e0e0;
+}
+
+.stars-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    color: #ffc107;
+}
+
+.stars-outer::before,
+.stars-inner::before {
+    content: "\f005 \f005 \f005 \f005 \f005";
+}
+
+/* Rating container */
+.rating-container {
+    text-align: center;
+    font-family: sans-serif;
+}
+
+.rating-number {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.rating-count {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+/* Remove spinner buttons from number inputs */
+.custom-input::-webkit-outer-spin-button,
+.custom-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.custom-input {
+    -moz-appearance: textfield;
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+}
+
+/* Input group styling */
+.input-group-text {
+    border-left: none;
+}
+
+.form-control:focus {
+    z-index: 0;
+}
+
+/* Icon hover effects - primary */
+.icon-hover-primary:hover {
+    border-color: #3b71ca !important;
+    background-color: white !important;
+}
+
+.icon-hover-primary:hover i {
+    color: #3b71ca !important;
+}
+
+/* Icon hover effects - danger */
+.icon-hover-danger:hover {
+    border-color: #dc4c64 !important;
+    background-color: white !important;
+}
+
+.icon-hover-danger:hover i {
+    color: #dc4c64 !important;
+}
+
+/* Pointer cursor for interactive elements */
+.nav-link-pointer,
+.edit-icon {
+    cursor: pointer;
+}
+
+/* Avatar sizing */
+.avatar-sm {
+    height: 60px;
+    width: 60px;
+}
+
+.avatar-lg {
+    height: 80px;
+    width: 80px;
+    object-fit: cover;
+}
+
+/* Footer link hover effect */
+.footer-link-hover:hover {
+    color: white !important;
+    transition: color 0.2s ease;
+}
+
+/* Horizontal carousel layout */
+.product-carousel-row {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 1.5rem;
+    padding: 1rem 0;
+    scrollbar-width: none;
+    /* Hide scrollbar for Firefox */
+}
+
+.product-carousel-row::-webkit-scrollbar {
+    display: none;
+    /* Hide scrollbar for Chrome/Safari */
+}
+
+.product-card-wrapper {
+    flex: 0 0 auto;
+    width: 280px;
+    /* Adjust according to your design */
+}
+
+.carousel-controls button {
+    width: 40px;
+    height: 40px;
+}

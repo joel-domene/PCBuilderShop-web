@@ -1,0 +1,16 @@
+/* Hover effect for action buttons */
+.icon-hover:hover {
+    border-color: #3b71ca !important;
+    color: #3b71ca !important;
+}
+
+/* Banner styling */
+.card-banner {
+    background-size: cover;
+    background-position: center;
+}
+
+/* Remove text decoration from links */
+a {
+    text-decoration: none;
+}

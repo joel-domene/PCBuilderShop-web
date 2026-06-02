@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>PCBuilderShop - Gestión de Reseñas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="../../css/style.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
+</head>
+
+<body>
+   {{#isLoggedIn}}
+        {{> partials/headers/loged_header}}
+    {{/isLoggedIn}}
+    
+    {{^isLoggedIn}}
+        {{> partials/headers/unloged_header}}
+    {{/isLoggedIn}} 
+        <main class="container my-5 pt-4">
+        <!-- Navigation of Administration -->
+        <nav class="nav nav-pills mb-4">
+            <a class="nav-link" href="admin-dashboard"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
+            <a class="nav-link" href="item-list"><i class="bi bi-box-seam me-1"></i>Productos</a>
+            <a class="nav-link" href="user-list"><i class="bi bi-people me-1"></i>Usuarios</a>
+            <a class="nav-link active" href="review-list"><i class="bi bi-chat-left-text me-1"></i>Reseñas</a>
+            <a class="nav-link" href="order-list"><i class="bi bi-cart-check me-1"></i>Pedidos</a>
+        </nav>
+        <!-- Section Title -->
+        <header class="mb-4">
+            <h2 class="mb-1"><i class="bi bi-chat-left-dots me-2"></i>Gestión de Reseñas</h2>
+            <p class="text-muted mb-0 small">Gestiona las opiniones de los clientes y responde oficialmente a sus
+                valoraciones.</p>
+        </header>
+        <!-- Panel de Filtros -->
+        <section class="card shadow-sm mb-4">
+            <div class="card-header bg-white py-2">
+                <h5 class="mb-0 small fw-bold"><i class="bi bi-funnel me-2"></i>Filtros de Búsqueda</h5>
+            </div>
+            <div class="card-body">
+                <form class="row g-3" onsubmit="return false;">
+                    <div class="col-md-3">
+                        <label class="form-label small">Categoría</label>
+                        <select class="form-select form-select-sm" id="filterReviewCategory">
+                            <option value="">Todas</option>
+                            <option value="CPU">Procesadores</option>
+                            <option value="GPU">Tarjetas Gráficas</option>
+                            <option value="Motherboard">Placas Base</option>
+                            <option value="RAM">Memoria RAM</option>
+                            <option value="SSD">Almacenamiento</option>
+                            <option value="PowerSupply">Fuentes de Alimentación</option>
+                            <option value="Cooling">Refrigeración</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small">Producto específico</label>
+                        <input class="form-select-sm form-control" placeholder="Ej: Ryzen 7..." type="text" id="filterReviewProduct" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small">Valoración</label>
+                        <select class="form-select form-select-sm" id="filterReviewRating">
+                            <option value="">Todas</option>
+                            <option value="5">5 Estrellas</option>
+                            <option value="4">4 Estrellas</option>
+                            <option value="3">3 o menos</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small">Contenido</label>
+                        <select class="form-select form-select-sm" id="filterReviewContent">
+                            <option selected="" value="">Cualquiera</option>
+                            <option value="replied">Con respuesta</option>
+                            <option value="noreplied">Sin respuesta</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button class="btn btn-sm btn-primary w-100" type="button" id="btnFilterReviews"><i
+                                class="bi bi-search me-1"></i>Filtrar</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+        <!-- Review Gallery -->
+        <div class="row g-3" id="reviewContainer">
+            {{#reviews}}
+            <article class="col-12 review-card"
+                     data-product="{{product.name}}"
+                     data-category="{{product.category}}"
+                     data-score="{{score}}"
+                     data-hasreply="{{hasAdminReply}}">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center pt-3">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3"
+                                style="width: 38px; height: 38px;"><i class="bi bi-person"></i></div>
+                            <div>
+                                <h6 class="mb-0 small fw-bold">{{user.displayName}}</h6>
+                                <small class="text-muted">sobre {{product.name}} • {{formattedDate}}</small>
+                            </div>
+                        </div>
+                        <div class="text-warning small">
+                            {{{starsHtml}}}
+                        </div>
+                    </div>
+                    <div class="card-body py-2">
+                        <p class="card-text small">"{{comment}}"</p>
+                        {{#hasAdminReply}}
+                        <div class="alert alert-light border-start border-primary border-4 py-2 mt-2 mb-0">
+                            <small><strong>Réplica Admin:</strong> "{{adminReply}}"</small>
+                        </div>
+                        {{/hasAdminReply}}
+                    </div>
+                    <div class="card-footer bg-white border-0 text-end pb-3">
+                        <button class="btn btn-link btn-sm text-danger p-0 me-3"
+                            onclick="setDeleteReview('{{id}}', '{{user.displayName}}')"
+                            data-bs-target="#modalEliminar" data-bs-toggle="modal">
+                            <i class="bi bi-trash me-1"></i>Eliminar
+                        </button>
+                        {{#hasAdminReply}}
+                        <form action="/admin/review-reply-delete" method="POST" class="d-inline-block p-0 m-0">
+                            {{#_csrf}}
+                            <input type="hidden" name="_csrf" value="{{token}}" />
+                            {{/_csrf}}
+                            <input type="hidden" name="id" value="{{id}}">
+                            <button type="submit" class="btn btn-outline-danger btn-sm px-3 me-2">
+                                <i class="bi bi-trash-fill me-1"></i>Borrar respuesta
+                            </button>
+                        </form>
+                        <button class="btn btn-outline-primary btn-sm px-3"
+                            onclick="openReply('{{id}}', '{{user.displayName}}', '{{adminReply}}')">
+                            <i class="bi bi-pencil me-1"></i>Editar respuesta
+                        </button>
+                        {{/hasAdminReply}}
+                        {{^hasAdminReply}}
+                        <button class="btn btn-primary btn-sm px-4"
+                            onclick="openReply('{{id}}', '{{user.displayName}}', '')">Responder</button>
+                        {{/hasAdminReply}}
+                    </div>
+                </div>
+            </article>
+            {{/reviews}}
+        </div>
+    </main>
+
+    <!-- Reply Modal -->
+    <div aria-hidden="true" class="modal fade" id="replyModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title small fw-bold" id="replyLabel">Responder Reseña</h5>
+                    <button class="btn-close" data-bs-dismiss="modal" type="button"></button>
+                </div>
+                <form action="/admin/review-reply" method="POST">
+                    {{#_csrf}}
+                    <input type="hidden" name="_csrf" value="{{token}}" />
+                    {{/_csrf}}
+                    <input type="hidden" name="id" id="replyReviewId" />
+                    <div class="modal-body py-0">
+                        <p class="small text-muted mb-2" id="replyToUser"></p>
+                        <textarea class="form-control form-control-sm" name="reply" id="replyContent"
+                            placeholder="Escribe tu respuesta aquí..." rows="4"></textarea>
+                    </div>
+                    <div class="modal-footer border-0 pb-4">
+                        <button class="btn btn-light btn-sm px-4" data-bs-dismiss="modal" type="button">Cancelar</button>
+                        <button class="btn btn-primary btn-sm px-4" type="submit">Enviar Respuesta</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div aria-hidden="true" class="modal fade" id="modalEliminar" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-body text-center py-4">
+                    <i class="bi bi-trash3 text-danger fs-1 mb-3"></i>
+                    <p class="mb-4">¿Eliminar la reseña de <br /><strong id="delUserName"></strong> ?</p>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-light w-100" data-bs-dismiss="modal" type="button">No, cancelar</button>
+                        <form action="/admin/review-delete" method="POST" class="w-100">
+                            {{#_csrf}}
+                            <input type="hidden" name="_csrf" value="{{token}}" />
+                            {{/_csrf}}
+                            <input type="hidden" name="id" id="deleteReviewId" />
+                            <button type="submit" class="btn btn-danger w-100">Sí, eliminar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{> partials/footer}}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const showModal = (id) => new bootstrap.Modal(document.getElementById(id)).show();
+
+        function openReply(reviewId, user, existing) {
+            document.getElementById('replyReviewId').value = reviewId;
+            document.getElementById('replyToUser').innerText = 'Respondiendo a: ' + user;
+            document.getElementById('replyContent').value = existing || '';
+            document.getElementById('replyLabel').innerText = existing ? 'Editar Respuesta' : 'Responder Reseña';
+            showModal('replyModal');
+        }
+
+        function setDeleteReview(id, user) {
+            document.getElementById('deleteReviewId').value = id;
+            document.getElementById('delUserName').innerText = user;
+        }
+
+        // Client-side filtering
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterCategory = document.getElementById('filterReviewCategory');
+            const filterProduct = document.getElementById('filterReviewProduct');
+            const filterRating = document.getElementById('filterReviewRating');
+            const filterContent = document.getElementById('filterReviewContent');
+            const btnFilter = document.getElementById('btnFilterReviews');
+            const cards = document.querySelectorAll('.review-card');
+
+            function applyFilters() {
+                const categoryQuery = filterCategory.value.toLowerCase();
+                const productQuery = filterProduct.value.toLowerCase().trim();
+                const ratingQuery = filterRating.value;
+                const contentQuery = filterContent.value;
+
+                cards.forEach(card => {
+                    const product = (card.getAttribute('data-product') || '').toLowerCase();
+                    const category = (card.getAttribute('data-category') || '').toLowerCase();
+                    const score = parseInt(card.getAttribute('data-score') || '0');
+                    const hasReply = card.getAttribute('data-hasreply') === 'true';
+
+                    // Category filter
+                    let categoryMatch = !categoryQuery || category === categoryQuery;
+
+                    // Product name filter
+                    let productMatch = !productQuery || product.includes(productQuery);
+
+                    // Rating filter
+                    let ratingMatch = true;
+                    if (ratingQuery === '5') ratingMatch = score === 5;
+                    else if (ratingQuery === '4') ratingMatch = score === 4;
+                    else if (ratingQuery === '3') ratingMatch = score <= 3;
+
+                    // Content filter (replied / not replied)
+                    let contentMatch = true;
+                    if (contentQuery === 'replied') contentMatch = hasReply;
+                    else if (contentQuery === 'noreplied') contentMatch = !hasReply;
+
+                    card.style.display = (categoryMatch && productMatch && ratingMatch && contentMatch) ? '' : 'none';
+                });
+            }
+
+            btnFilter.addEventListener('click', applyFilters);
+            filterCategory.addEventListener('change', applyFilters);
+            filterProduct.addEventListener('input', applyFilters);
+            filterRating.addEventListener('change', applyFilters);
+            filterContent.addEventListener('change', applyFilters);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="../assets/icons/logo.png">
+  <title>Profile - PCBuilderShop</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+  <link rel="stylesheet" href="../styles/profile.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+</head>
+
+<body>
+  {{#isLoggedIn}}
+    {{> partials/headers/loged_header}}
+  {{/isLoggedIn}}
+  
+  {{^isLoggedIn}}
+    {{> partials/headers/unloged_header}}
+  {{/isLoggedIn}}
+
+  <section class="bg-light my-5 pt-4">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-3 col-xl-3">
+          <nav class="nav flex-lg-column w-100 d-flex nav-pills mb-4" role="tablist">
+            <a class="nav-link my-0 active nav-link-pointer" id="account-tab" data-bs-toggle="pill"
+              data-bs-target="#account-pane" role="tab" aria-controls="account-pane" aria-selected="true">
+              Perfil
+            </a>
+            <a class="nav-link my-0 nav-link-pointer" id="orders-tab" data-bs-toggle="pill"
+              data-bs-target="#orders-pane" role="tab" aria-controls="orders-pane" aria-selected="false">
+              Pedidos
+            </a>
+            <a class="nav-link my-0 nav-link-pointer" id="modify-tab" data-bs-toggle="pill"
+              data-bs-target="#modify-pane" role="tab" aria-controls="modify-pane" aria-selected="false">
+              Modificar cuenta
+            </a>
+          </nav>
+        </div>
+
+        <main class="col-lg-9 col-xl-9">
+          <div class="card p-4 mb-0 shadow-0 border">
+
+            <div class="tab-content" id="myTabContent">
+
+              <!-- Tab: Perfil -->
+              <div class="tab-pane fade show active" id="account-pane" role="tabpanel" aria-labelledby="account-tab"
+                tabindex="0">
+                <div class="content-body">
+                  <div class="text-center mb-5">
+                    {{#usuario}}
+                    {{#hasPicture}}
+                    <img src="/user/{{id}}/image" 
+                         class="rounded-circle border shadow-sm mb-3" 
+                         style="width: 150px; height: 150px; object-fit: cover;" />
+                    {{/hasPicture}}
+                    {{^hasPicture}}
+                    <div class="rounded-circle border shadow-sm mb-3 mx-auto bg-primary text-white d-flex align-items-center justify-content-center"
+                         style="width: 150px; height: 150px; font-size: 3rem;">
+                      <i class="bi bi-person-fill"></i>
+                    </div>
+                    {{/hasPicture}}
+                    <h3 class="fw-bold">{{displayName}}</h3>
+                    <p class="text-muted">{{email}}</p>
+                    {{/usuario}}
+                  </div>
+
+                  <hr />
+
+                  <div class="mt-4">
+                    <h5 class="fw-bold mb-4">Opiniones recientes</h5>
+
+                    {{#reviews}}
+                    <div class="card border-0 border-bottom rounded-0 mb-4 pb-4 bg-transparent">
+                      <div class="d-flex align-items-center mb-3">
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
+                          <i class="bi bi-person-fill"></i>
+                        </div>
+                        <span class="fw-bold small">{{user.displayName}}</span>
+                        <span class="text-muted small ms-auto">{{formattedDate}}</span>
+                      </div>
+
+                      <div class="d-flex align-items-center mb-2 p-2 bg-light rounded-2">
+                        <div>
+                            <span class="d-block small fw-bold">{{product.name}}</span>
+                            <div class="stars-outer small">
+                                <div class="stars-inner" style="width: {{starsWidth}}%;"></div>
+                            </div>
+                        </div>
+                      </div>
+
+                      <p class="text-secondary small mb-2">
+                        "{{comment}}"
+                      </p>
+
+                      <div class="d-flex align-items-center">
+                        <span class="badge bg-success-subtle text-success me-3">
+                          <i class="fas fa-check me-1"></i> Compra verificada
+                        </span>
+                      </div>
+                    </div>
+                    {{/reviews}}
+
+                    {{^reviews}}
+                    <p class="text-muted">No has escrito ninguna opinión todavía.</p>
+                    {{/reviews}}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tab: Pedidos -->
+              <div class="tab-pane fade" id="orders-pane" role="tabpanel" aria-labelledby="orders-tab" tabindex="0">
+                <h5 class="mb-3">Tus pedidos</h5>
+
+                {{#pedidos}}
+                <div class="card border mb-4 shadow-0">
+                  <div class="card-body pb-0">
+                    <header class="d-lg-flex">
+                      <div class="flex-grow-1">
+                        <h6 class="mb-0">ID de pedido: {{id}} <i class="dot"></i>
+                          <span class="badge {{statusBadgeClass}}">{{status}}</span>
+                        </h6>
+                        <span class="text-muted">Fecha: {{formattedDate}}</span>
+                      </div>
+                    </header>
+                    <hr />
+                    <div class="row">
+                      <div class="col-lg-6 border-start">
+                        <p class="mb-0 text-muted">Pago</p>
+                        <p class="m-0">Total: {{formattedPrice}}€</p>
+                      </div>
+                    </div>
+                    <hr />
+                    <ul class="row list-unstyled">
+                      {{#products}}
+                      <li class="col-xl-4 col-lg-6">
+                        <div class="d-flex mb-3 mb-xl-0">
+                          <div>
+                            <p class="mb-0">{{name}}</p>
+                            <strong>{{price}}€</strong>
+                          </div>
+                        </div>
+                      </li>
+                      {{/products}}
+                    </ul>
+                  </div>
+                </div>
+                {{/pedidos}}
+
+                {{^pedidos}}
+                <p class="text-muted">No tienes ningún pedido todavía.</p>
+                {{/pedidos}}
+              </div>
+
+              <!-- Tab: Modificar cuenta -->
+              <div class="tab-pane fade" id="modify-pane" role="tabpanel" aria-labelledby="modify-tab" tabindex="0">
+                <h5 class="mb-4">Modificar cuenta</h5>
+                <form action="/profile/update" method="POST" enctype="multipart/form-data">
+                  {{#_csrf}}
+                  <input type="hidden" name="_csrf" value="{{token}}" />
+                  {{/_csrf}}
+                  <div class="mb-4 d-flex align-items-center">
+                    {{#usuario}}
+                    {{#hasPicture}}
+                    <img src="/user/{{id}}/image" 
+                         class="rounded-circle border shadow-sm me-3" 
+                         style="width: 80px; height: 80px; object-fit: cover;" />
+                    {{/hasPicture}}
+                    {{^hasPicture}}
+                    <div class="rounded-circle border me-3 bg-primary text-white d-flex align-items-center justify-content-center"
+                         style="width: 80px; height: 80px; font-size: 2rem;">
+                      <i class="bi bi-person-fill"></i>
+                    </div>
+                    {{/hasPicture}}
+                    {{/usuario}}
+                    <div>
+                      <label for="profilePic" class="form-label mb-1 fw-bold">Cambiar foto de perfil</label>
+                      <input class="form-control form-control-sm" id="profilePic" name="imageFile" type="file" accept="image/*">
+                      <div class="form-text">Formatos permitidos: JPG, PNG o GIF.</div>
+                    </div>
+                  </div>
+
+                  {{#usuario}}
+                  <div class="row g-3 mb-4">
+                    <div class="col-md-12">
+                      <label for="userName" class="form-label fw-bold">Nombre de usuario</label>
+                      <input type="text" class="form-control" id="userName" name="username" value="{{username}}">
+                    </div>
+
+                    <div class="col-md-6">
+                      <label for="userEmail" class="form-label fw-bold">Correo electrónico</label>
+                      <input type="email" class="form-control" id="userEmail" name="email" value="{{email}}">
+                    </div>
+
+                    <hr class="my-4" />
+                  </div>
+                  {{/usuario}}
+
+                  <div class="d-flex justify-content-between align-items-center pt-4 border-top">
+                    <button type="submit" class="btn btn-primary px-4">Guardar cambios</button>
+                    <button type="button" class="btn btn-outline-danger">Borrar cuenta</button>
+                  </div>
+                </form>
+              </div>
+
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </section>
+
+  {{> partials/footer}}
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const btnModificar = document.getElementById('btn-ir-a-modificar');
+      const tabModificar = document.getElementById('modify-tab');
+      if (btnModificar && tabModificar) {
+        btnModificar.addEventListener('click', function (e) {
+          e.preventDefault();
+          const tabTrigger = new bootstrap.Tab(tabModificar);
+          tabTrigger.show();
+        });
+      }
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
