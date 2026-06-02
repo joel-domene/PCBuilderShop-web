@@ -121,7 +121,7 @@ El control de propiedad está implementado a nivel de seguridad: un usuario solo
 
 ![Página principal](assets/images/images-update/index-update.png)
 
-*Home con productos recomendados, novegades de hardware y acceso a categorías.*
+*Home con productos recomendados, novedades de hardware y acceso a categorías.*
 
 ![Página de búsqueda con filtros](assets/images/images-update/paginabusqueda-update.png)
 
